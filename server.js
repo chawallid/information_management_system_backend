@@ -128,7 +128,7 @@ function eventsHandler(request, response, next) {
       var obj = []
       const newData = request.body;
       console.log("updateAllInfomation",newData)
-      connection.query("SELECT instructor FROM teaching_infomation WHERE teaching_infomation.id =  " + String(target[1]), (err, rows, fields) => {
+      connection.query("SELECT instructor FROM teaching_infomation WHERE teaching_infomation.id =  " + String(target), (err, rows, fields) => {
         if (!err) {
           // console.log("check",rows[0]["instructor"])
           obj = rows[0]["instructor"]
@@ -138,7 +138,7 @@ function eventsHandler(request, response, next) {
             obj.push(newData)
             let update = JSON.stringify(obj);
             console.log(update)
-            connection.query("UPDATE `teaching_infomation` SET `instructor` = '"+ String(update)+"' WHERE `teaching_infomation`.`id` = "+ String(target[1]), (err, rows, fields) => {
+            connection.query("UPDATE `teaching_infomation` SET `instructor` = '"+ String(update)+"' WHERE `teaching_infomation`.`id` = "+ String(target), (err, rows, fields) => {
               connection.release() // return the connection to pool
               if (!err) {
                 respsonse.send({status:"true", data: "success"})
@@ -157,10 +157,10 @@ function eventsHandler(request, response, next) {
   function updateDateInfomation(request, respsonse, next){  
     pool.getConnection((err, connection) => {
       if(err) throw err
-      var target =  String(request.params.id)
+      var target = request.params.id
       const newData = request.body;
       console.log("ggg" ,target )
-      let send = "UPDATE `teaching_infomation` SET `date` = '"+newData.date+"' WHERE `teaching_infomation`.`id` = "+ String(target[1])
+      let send = "UPDATE `teaching_infomation` SET `date` = '"+newData.date+"' WHERE `teaching_infomation`.`id` = "+ String(target)
       console.log(send)
 
       connection.query(send, (err, rows, fields) => {
@@ -194,7 +194,7 @@ function eventsHandler(request, response, next) {
   }
   async function delTeacher(request, respsonse, next){
     var target =  String(request.params.id)
-    const send = "DELETE FROM `info_teachers` WHERE `info_teachers`.`id_teacher` = "+target[1]
+    const send = "DELETE FROM `info_teachers` WHERE `info_teachers`.`id_teacher` = "+target
     console.log("delTeacher",send)
     pool.getConnection((err, connection) => {
       if(err) throw err
@@ -212,7 +212,7 @@ function eventsHandler(request, response, next) {
 
   async function delCourse(request, respsonse, next){
     var target =  String(request.params.id)
-    const send = "DELETE FROM `info_course` WHERE `info_course`.`id` = "+target[1]
+    const send = "DELETE FROM `info_course` WHERE `info_course`.`id` = "+target
     console.log("delCourse",send)
     pool.getConnection((err, connection) => {
       if(err) throw err
@@ -265,13 +265,13 @@ function eventsHandler(request, response, next) {
 
   app.get('/AllInfomation',getAllInfomation)
   // app.post('/CreateInfomation', postAllInfomation)
-  // app.put('/updateInfomationtest:id', updateAllInfomation)
-  app.put('/updateInfomationDate:id', updateDateInfomation)
+  app.put('/updateInfomationtest/:id', updateAllInfomation)
+  app.put('/updateInfomationDate/:id', updateDateInfomation)
 
 
 
-  app.del('/delTeacher:id', delTeacher);
-  app.del('/delCourse:id', delCourse);
+  app.del('/delTeacher/:id', delTeacher);
+  app.del('/delCourse/:id', delCourse);
 
 
 
